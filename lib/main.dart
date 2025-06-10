@@ -1,9 +1,8 @@
+import 'package:app_imc/imcscreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: Home(),
-  ));
+  runApp(MaterialApp(home: Home()));
 }
 
 class Home extends StatefulWidget {
@@ -28,28 +27,23 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void _calculate() {
-    setState(() {
-      double weight = double.parse(weightController.text);
-      double height = double.parse(heightController.text) / 100;
-      double imc = weight / (height * height);
+  void _goToImcScreen() {
+    final double height = double.tryParse(weightController.text) ?? 0;
+    final double weight = double.tryParse(heightController.text) ?? 0;
 
-      if (imc < 18.5) {
-        _infoText = 'Abaixo do peso (${imc.toStringAsPrecision(3)})';
-      } else if (imc >= 18.5 && imc < 25) {
-        _infoText = 'Peso normal (${imc.toStringAsPrecision(3)})';
-      } else if (imc >= 25 && imc < 30) {
-        _infoText = 'Sobrepeso (${imc.toStringAsPrecision(3)})';
-      } else if (imc >= 30 && imc < 35) {
-        _infoText = 'Obesidade Grau I (${imc.toStringAsPrecision(3)})';
-      } else if (imc >= 35 && imc < 40) {
-        _infoText = 'Obesidade Grau II (${imc.toStringAsPrecision(3)})';
-      } else if (imc >= 40) {
-        _infoText = 'Obesidade Grau III (Mórbida) (${imc.toStringAsPrecision(3)})';
-      } else {
-        _infoText = 'IMC inválido';
-      }
-    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Imcscreen(weight: weight, height: height),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    heightController.dispose();
+    weightController.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,7 +57,7 @@ class _HomeState extends State<Home> {
           IconButton(
             icon: const Icon(Icons.refresh), // Added const
             onPressed: _resetFields,
-          )
+          ),
         ],
       ),
       backgroundColor: Colors.white,
@@ -74,10 +68,15 @@ class _HomeState extends State<Home> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Icon(Icons.person_outline, size: 120.0, color: Colors.green),
+              const Icon(
+                Icons.person_outline,
+                size: 120.0,
+                color: Colors.green,
+              ),
               TextFormField(
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration( // Added const
+                decoration: const InputDecoration(
+                  // Added const
                   labelText: "Peso (kg)",
                   labelStyle: TextStyle(color: Colors.green),
                 ),
@@ -114,11 +113,12 @@ class _HomeState extends State<Home> {
                   child: MaterialButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        _calculate();
+                        _goToImcScreen();
                       }
                     },
                     color: Colors.green,
-                    child: const Text( // Added const
+                    child: const Text(
+                      // Added const
                       "Calcular",
                       style: TextStyle(color: Colors.white, fontSize: 25.0),
                     ),
@@ -129,7 +129,7 @@ class _HomeState extends State<Home> {
                 _infoText,
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Colors.green, fontSize: 25.0),
-              )
+              ),
             ],
           ),
         ),
